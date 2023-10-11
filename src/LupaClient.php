@@ -140,7 +140,7 @@ class LupaClient implements LupaClientInterface
                 }
 
                 $this->errorHandler->handle($e);
-            } catch (Throwable $exception) {
+            } catch (Throwable $e) {
                 $this->errorHandler->handle($e);
             }
         } while (true);
