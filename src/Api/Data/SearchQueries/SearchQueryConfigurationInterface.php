@@ -8,6 +8,10 @@ interface SearchQueryConfigurationInterface extends QueryConfigurationInterface
 
     public function setQueryFields(OrderedMapInterface $queryFields): self;
 
+    public function getPriorityFields(): OrderedMapInterface;
+
+    public function setPriorityFields(OrderedMapInterface $priorityFields): self;
+
     public function getMatch(): string;
 
     public function setMatch(string $match): self;
@@ -27,6 +31,14 @@ interface SearchQueryConfigurationInterface extends QueryConfigurationInterface
     public function getSimilarQueries(): OrderedMapInterface;
 
     public function setSimilarQueries(OrderedMapInterface $similarQueries): self;
+
+    public function getSimilarResults(): OrderedMapInterface;
+
+    public function setSimilarResults(OrderedMapInterface $similarResults): self;
+
+    public function getAiSynonyms(): OrderedMapInterface;
+
+    public function setAiSynonyms(OrderedMapInterface $aiSynonyms): self;
 
     /**
      * @return string[]
@@ -58,9 +70,17 @@ interface SearchQueryConfigurationInterface extends QueryConfigurationInterface
      */
     public function setFacets(array $facets): self;
 
+    public function getDynamicFacets(): OrderedMapInterface;
+
+    public function setDynamicFacets(OrderedMapInterface $dynamicFacets): self;
+
     public function getFilters(): OrderedMapInterface;
 
     public function setFilters(OrderedMapInterface $filters): self;
+
+    public function getExclusionFilters(): OrderedMapInterface;
+
+    public function setExclusionFilters(OrderedMapInterface $exclusionFilters): self;
 
     /**
      * @return string[]
@@ -102,23 +122,7 @@ interface SearchQueryConfigurationInterface extends QueryConfigurationInterface
 
     public function setExactTotalCount(bool $exactTotalCount): self;
 
-    /**
-     * @return string[]
-     */
-    public function getMustIncludeIds(): array;
+    public function getExactMatchMultiplier(): float;
 
-    /**
-     * @param string[] $mustIncludeIds
-     */
-    public function setMustIncludeIds(array $mustIncludeIds): self;
-
-    /**
-     * @return string[]
-     */
-    public function getMustExcludeIds(): array;
-
-    /**
-     * @param string[] $mustExcludeIds
-     */
-    public function setMustExcludeIds(array $mustExcludeIds): self;
+    public function setExactMatchMultiplier(float $exactMatchMultiplier): self;
 }

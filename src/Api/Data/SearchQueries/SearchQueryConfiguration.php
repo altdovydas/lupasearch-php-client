@@ -14,6 +14,11 @@ class SearchQueryConfiguration implements SearchQueryConfigurationInterface
     private $queryFields;
 
     /**
+     * @var OrderedMapInterface
+     */
+    private $priorityFields;
+
+    /**
      * @var string
      */
     private $match = 'any';
@@ -39,6 +44,16 @@ class SearchQueryConfiguration implements SearchQueryConfigurationInterface
     private $similarQueries;
 
     /**
+     * @var OrderedMapInterface
+     */
+    private $similarResults;
+
+    /**
+     * @var OrderedMapInterface
+     */
+    private $aiSynonyms;
+
+    /**
      * @var string[]
      */
     private $selectFields;
@@ -56,7 +71,17 @@ class SearchQueryConfiguration implements SearchQueryConfigurationInterface
     /**
      * @var OrderedMapInterface
      */
+    private $dynamicFacets;
+
+    /**
+     * @var OrderedMapInterface
+     */
     private $filters = [];
+
+    /**
+     * @var OrderedMapInterface
+     */
+    private $exclusionFilters;
 
     /**
      * @var string[]
@@ -99,14 +124,9 @@ class SearchQueryConfiguration implements SearchQueryConfigurationInterface
     private $exactTotalCount = false;
 
     /**
-     * @var string[]
+     * @var float
      */
-    private $mustIncludeIds = [];
-
-    /**
-     * @var string[]
-     */
-    private $mustExcludeIds = [];
+    private $exactMatchMultiplier = 1;
 
     public function getQueryFields(): OrderedMapInterface
     {
@@ -116,6 +136,18 @@ class SearchQueryConfiguration implements SearchQueryConfigurationInterface
     public function setQueryFields(OrderedMapInterface $queryFields): SearchQueryConfigurationInterface
     {
         $this->queryFields = $queryFields;
+
+        return $this;
+    }
+
+    public function getPriorityFields(): OrderedMapInterface
+    {
+        return $this->priorityFields;
+    }
+
+    public function setPriorityFields(OrderedMapInterface $priorityFields): SearchQueryConfigurationInterface
+    {
+        $this->priorityFields = $priorityFields;
 
         return $this;
     }
@@ -184,6 +216,30 @@ class SearchQueryConfiguration implements SearchQueryConfigurationInterface
         return $this;
     }
 
+    public function getSimilarResults(): OrderedMapInterface
+    {
+        return $this->similarResults;
+    }
+
+    public function setSimilarResults(OrderedMapInterface $similarResults): SearchQueryConfigurationInterface
+    {
+        $this->similarResults = $similarResults;
+
+        return $this;
+    }
+
+    public function getAiSynonyms(): OrderedMapInterface
+    {
+        return $this->aiSynonyms;
+    }
+
+    public function setAiSynonyms(OrderedMapInterface $aiSynonyms): SearchQueryConfigurationInterface
+    {
+        $this->aiSynonyms = $aiSynonyms;
+
+        return $this;
+    }
+
     public function getSelectFields(): array
     {
         return $this->selectFields;
@@ -220,6 +276,18 @@ class SearchQueryConfiguration implements SearchQueryConfigurationInterface
         return $this;
     }
 
+    public function getDynamicFacets(): OrderedMapInterface
+    {
+        return $this->dynamicFacets;
+    }
+
+    public function setDynamicFacets(OrderedMapInterface $dynamicFacets): SearchQueryConfigurationInterface
+    {
+        $this->dynamicFacets = $dynamicFacets;
+
+        return $this;
+    }
+
     public function getFilters(): OrderedMapInterface
     {
         return $this->filters;
@@ -228,6 +296,18 @@ class SearchQueryConfiguration implements SearchQueryConfigurationInterface
     public function setFilters(OrderedMapInterface $filters): SearchQueryConfigurationInterface
     {
         $this->filters = $filters;
+
+        return $this;
+    }
+
+    public function getExclusionFilters(): OrderedMapInterface
+    {
+        return $this->exclusionFilters;
+    }
+
+    public function setExclusionFilters(OrderedMapInterface $exclusionFilters): SearchQueryConfigurationInterface
+    {
+        $this->exclusionFilters = $exclusionFilters;
 
         return $this;
     }
@@ -328,26 +408,14 @@ class SearchQueryConfiguration implements SearchQueryConfigurationInterface
         return $this;
     }
 
-    public function getMustIncludeIds(): array
+    public function getExactMatchMultiplier(): float
     {
-        return $this->mustIncludeIds;
+        return $this->exactMatchMultiplier;
     }
 
-    public function setMustIncludeIds(array $mustIncludeIds): SearchQueryConfigurationInterface
+    public function setExactMatchMultiplier(float $exactMatchMultiplier): SearchQueryConfigurationInterface
     {
-        $this->mustIncludeIds = array_values(array_unique($mustIncludeIds));
-
-        return $this;
-    }
-
-    public function getMustExcludeIds(): array
-    {
-        return $this->mustExcludeIds;
-    }
-
-    public function setMustExcludeIds(array $mustExcludeIds): SearchQueryConfigurationInterface
-    {
-        $this->mustExcludeIds = array_values(array_unique($mustExcludeIds));
+        $this->exactMatchMultiplier = $exactMatchMultiplier;
 
         return $this;
     }
@@ -364,9 +432,12 @@ class SearchQueryConfiguration implements SearchQueryConfigurationInterface
             'limit' => $this->limit,
             'sort' => $this->sort,
             'exactTotalCount' => $this->exactTotalCount,
-            //'mustIncludeIds' => $this->mustIncludeIds, //@TODO: waiting for fix
-            //'mustExcludeIds' => $this->mustExcludeIds, //@TODO: waiting for fix
+            'exactMatchMultiplier' => $this->exactMatchMultiplier
         ];
+
+        if (!$this->priorityFields->isEmpty()) {
+            $data['priorityFields'] = $this->priorityFields;
+        }
 
         if (!$this->boostPhrase->isEmpty()) {
             $data['boostPhrase'] = $this->boostPhrase;
@@ -384,12 +455,28 @@ class SearchQueryConfiguration implements SearchQueryConfigurationInterface
             $data['similarQueries'] = $this->similarQueries;
         }
 
+        if (!$this->similarResults->isEmpty()) {
+            $data['similarResults'] = $this->similarResults;
+        }
+
+        if (!$this->aiSynonyms->isEmpty()) {
+            $data['aiSynonyms'] = $this->aiSynonyms;
+        }
+
         if ($this->selectableFields) {
             $data['selectableFields'] = $this->selectableFields;
         }
 
+        if (!$this->dynamicFacets->isEmpty()) {
+            $data['dynamicFacets'] = $this->dynamicFacets;
+        }
+
         if (!$this->filters->isEmpty()) {
             $data['filters'] = $this->filters;
+        }
+
+        if (!$this->exclusionFilters->isEmpty()) {
+            $data['exclusionFilters'] = $this->exclusionFilters;
         }
 
         if (!$this->statisticalBoost->isEmpty()) {
