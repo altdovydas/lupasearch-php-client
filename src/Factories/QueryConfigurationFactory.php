@@ -51,11 +51,14 @@ class QueryConfigurationFactory implements QueryConfigurationFactoryInterface
     {
         $searchQueryConfiguration = new SearchQueryConfiguration();
         $searchQueryConfiguration->setQueryFields($this->createOrderMap($data['queryFields'] ?? []));
+        $searchQueryConfiguration->setPriorityFields($this->createOrderMap($data['priorityFields'] ?? []));
         $searchQueryConfiguration->setMatch($data['match'] ?? '');
         $searchQueryConfiguration->setBoostPhrase($this->createOrderMap($data['boostPhrase'] ?? []));
-        $searchQueryConfiguration->setBoost($this->createOrderMap($data['boost'] ?? []));
+        $searchQueryConfiguration->setBoost($this->createOrderMap(array_filter($data['boost'] ?? [])));
         $searchQueryConfiguration->setDidYouMean($this->createOrderMap($data['didYouMean'] ?? []));
         $searchQueryConfiguration->setSimilarQueries($this->createOrderMap($data['similarQueries'] ?? []));
+        $searchQueryConfiguration->setSimilarResults($this->createOrderMap($data['similarResults'] ?? []));
+        $searchQueryConfiguration->setAiSynonyms($this->createOrderMap($data['aiSynonyms'] ?? []));
         $searchQueryConfiguration->setSelectFields($data['selectFields'] ?? []);
         $searchQueryConfiguration->setSelectableFields($data['selectableFields'] ?? []);
         $searchQueryConfiguration->setFilters($this->createOrderMap($data['filters'] ?? []));
@@ -75,12 +78,14 @@ class QueryConfigurationFactory implements QueryConfigurationFactoryInterface
         }
         $searchQueryConfiguration->setFacets($facets);
 
+        $searchQueryConfiguration->setDynamicFacets($this->createOrderMap($data['dynamicFacets'] ?? []));
+        $searchQueryConfiguration->setFilters($this->createOrderMap($data['filters'] ?? []));
+        $searchQueryConfiguration->setExclusionFilters($this->createOrderMap($data['exclusionFilters'] ?? []));
         $searchQueryConfiguration->setStatisticalBoost($this->createOrderMap($data['statisticalBoost'] ?? []));
         $searchQueryConfiguration->setPersonalization($this->createOrderMap($data['personalization'] ?? []));
         $searchQueryConfiguration->setCollapse($this->createOrderMap($data['collapse'] ?? []));
         $searchQueryConfiguration->setExactTotalCount($data['exactTotalCount'] ?? false);
-        $searchQueryConfiguration->setMustIncludeIds($data['mustIncludeIds'] ?? []);
-        $searchQueryConfiguration->setMustExcludeIds($data['mustExcludeIds'] ?? []);
+        $searchQueryConfiguration->setExactMatchMultiplier((float)($data['exactMatchMultiplier'] ?? 1));
 
         return $searchQueryConfiguration;
     }
